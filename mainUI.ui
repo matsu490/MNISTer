@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>663</width>
+    <height>416</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <widget class="QLabel" name="ClassificationResult">
+   <property name="geometry">
+    <rect>
+     <x>410</x>
+     <y>90</y>
+     <width>161</width>
+     <height>151</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>50</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>5</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="CorrectButton">
+   <property name="geometry">
+    <rect>
+     <x>390</x>
+     <y>250</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Correct</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="CorrectLabel">
+   <property name="geometry">
+    <rect>
+     <x>580</x>
+     <y>250</y>
+     <width>69</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="editable">
+    <bool>false</bool>
+   </property>
+   <property name="currentIndex">
+    <number>-1</number>
+   </property>
+   <property name="maxVisibleItems">
+    <number>1</number>
+   </property>
+   <property name="maxCount">
+    <number>10</number>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="SubmitCorrectLabel">
+   <property name="geometry">
+    <rect>
+     <x>490</x>
+     <y>250</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Submit</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
