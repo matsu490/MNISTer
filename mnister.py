@@ -3,6 +3,8 @@ import PyQt4.QtGui
 import PyQt4.QtCore
 import PyQt4.uic
 import cv2
+import numpy as np
+import pickle
 
 uifile = './mainUI.ui'
 form, base = PyQt4.uic.loadUiType(uifile)
@@ -126,17 +128,6 @@ class Painter(PyQt4.QtGui.QWidget):
 
 
 class CreateUI(base, form):
-    is_brush = True
-    drawing_shapes = Shapes()
-    is_painting = False
-    is_eraseing = False
-
-    current_colour = Colour3(0,0,0)
-    current_width = 10
-    shape_num = 0
-    is_mouseing = False
-    paint_panel = 0
-
     def __init__(self):
         super(base, self).__init__()
         self.setupUi(self)
@@ -146,16 +137,27 @@ class CreateUI(base, form):
         self.BlackBoard.insertWidget(0, self.paint_panel)
         self.BlackBoard.setCurrentWidget(self.paint_panel)
         self.establishConnections()
-        self.ClassLabels.addItem('0')
-        self.ClassLabels.addItem('1')
-        self.ClassLabels.addItem('2')
-        self.ClassLabels.addItem('3')
-        self.ClassLabels.addItem('4')
-        self.ClassLabels.addItem('5')
-        self.ClassLabels.addItem('6')
-        self.ClassLabels.addItem('7')
-        self.ClassLabels.addItem('8')
-        self.ClassLabels.addItem('9')
+        self.initClassLabels()
+        self.is_brush = True
+        self.is_painting = False
+        self.is_eraseing = False
+        self.is_mouseing = False
+        self.drawing_shapes = Shapes()
+        self.current_colour = Colour3(0,0,0)
+        self.shape_num = 0
+        self.current_width = 20
+        params = self.unpickle('params.pkl')
+        self.network = TwoLayerNet(params)
+
+    def initClassLabels(self):
+        for i in xrange(10):
+            self.ClassLabels.addItem(str(i))
+
+    def unpickle(self, fname):
+        with open(fname, 'rb') as f:
+            y = pickle.load(f)
+
+        return y
 
     def switchBrush(self):
         self.is_brush = not self.is_brush
@@ -169,8 +171,10 @@ class CreateUI(base, form):
         cv2.imwrite('temp28x28.png', negaposi)
         scaled_pixmap = PyQt4.QtGui.QPixmap('temp28x28.png')
         scaled_pixmap = scaled_pixmap.scaledToHeight(200)
-        scaled_pixmap = scaled_pixmap.scaledToWidth(200)
         self.label.setPixmap(scaled_pixmap)
+        scaled_img_array = cv2.imread('temp28x28.png', cv2.IMREAD_GRAYSCALE)
+        digit = self.network.judge(scaled_img_array.reshape(784))
+        self.ClassificationResult.setText(str(digit))
 
     def changeThickness(self, num):
         self.current_width = num
@@ -178,6 +182,7 @@ class CreateUI(base, form):
     def clearSlate(self):
         self.drawing_shapes = Shapes()
         self.paint_panel.repaint()
+        self.label.clear()
 
     def correct(self):
         pass
@@ -192,6 +197,95 @@ class CreateUI(base, form):
         PyQt4.QtCore.QObject.connect(self.ThicknessSpinner, PyQt4.QtCore.SIGNAL('valueChanged(int)'), self.changeThickness)
         PyQt4.QtCore.QObject.connect(self.CorrectButton, PyQt4.QtCore.SIGNAL('clicked()'), self.correct)
         PyQt4.QtCore.QObject.connect(self.SubmitButton, PyQt4.QtCore.SIGNAL('clicked()'), self.submit)
+
+
+def sigmoid(x):
+    return 1. / (1. + np.exp(-x))
+
+
+def softmax(x):
+    return np.exp(x) / np.sum(np.exp(x))
+
+
+def numerical_gradient(f, x):
+    h = 1e-4
+    grad = np.zeros_like(x)
+
+    it = np.nditer(x, flags=['multi_index'], op_flags=['readwrite'])
+    while not it.finished:
+        idx = it.multi_index
+        tmp_val = x[idx]
+        x[idx] = float(tmp_val) + h
+        fxh1 = f(x)
+
+        x[idx] = tmp_val - h
+        fxh2 = f(x)
+        grad[idx] = (fxh1 - fxh2) / (w * h)
+        it.iternext()
+
+    return grad
+
+
+def cross_entropy_error(y, t):
+    if y.ndim == 1:
+        t = t.reshape(1, t.size)
+        y = y.reshape(1, y.size)
+
+    if t.size == y.size:
+        t = t.argmax(axis=1)
+
+    batch_size = y.shape[0]
+
+    return -np.sum(np.log(y[np.arange(batch_size), t])) / batch_size
+
+
+class TwoLayerNet(object):
+    def __init__(self, params, input_size=784, hidden_size=100, output_size=10):
+        self.params = {}
+        self.params['W1'] = params['W1']
+        self.params['b1'] = params['b1']
+        self.params['W2'] = params['W2']
+        self.params['b2'] = params['b2']
+
+    def initParams(self, input_size=784, hidden_size=100, output_size=10, weight_init_std=0.01):
+        self.params['W1'] = weight_init_std * np.random.randn(input_size, hidden_size)
+        self.params['b1'] = np.zeros(hidden_size)
+        self.params['W2'] = weight_init_std * np.random.randn(hidden_size, output_size)
+        self.params['b2'] = np.zeros(output_size)
+
+    def predict(self, x):
+        W1, W2 = self.params['W1'], self.params['W2']
+        b1, b2 = self.params['b1'], self.params['b2']
+
+        a1 = np.dot(x, W1) + b1
+        z1 = sigmoid(a1)
+        a2 = np.dot(z1, W2) + b2
+        y = softmax(a2)
+        return y
+
+    def judge(self, x):
+        return np.argmax(self.predict(x))
+
+    def loss(self, x, t):
+        y = self.predict(x)
+        return cross_entropy_error(y, t)
+
+    def accuracy(self, x, t):
+        y = predict(x)
+        y = np.argmax(y, axis=1)
+        t = np.argmax(t, axis=1)
+        accuracy = np.sum(y == t) / float(x.shape[0])
+        return accuracy
+
+    def numerical_gradient(self, x, t):
+        loss_W = lambda W: self.loss(x, t)
+
+        grads = {}
+        grads['W1'] = numerical_gradient(loss_W, self.params['W1'])
+        grads['b1'] = numerical_gradient(loss_W, self.params['b1'])
+        grads['W2'] = numerical_gradient(loss_W, self.params['W2'])
+        grads['b2'] = numerical_gradient(loss_W, self.params['b2'])
+        return grads
 
 if __name__ == '__main__':
     app = PyQt4.QtGui.QApplication(sys.argv)
