@@ -2,32 +2,21 @@ import sys
 import PyQt4.QtGui
 import PyQt4.QtCore
 import PyQt4.uic
+import cv2
 
 uifile = './mainUI.ui'
 form, base = PyQt4.uic.loadUiType(uifile)
 
 
 class Colour3(object):
-    def __init__(self):
-        self.R = 0
-        self.G = 0
-        self.B = 0
-
-    def __init__(self, R, G, B):
+    def __init__(self, R=0, G=0, B=0):
         self.R = R
         self.G = G
         self.B = B
 
 
 class Point(object):
-    x = 0
-    y = 0
-
-    def __init__(self):
-        self.x = 0
-        self.y = 0
-
-    def __init__(self, x, y):
+    def __init__(self, x=0, y=0):
         self.x = x
         self.y = y
 
@@ -37,12 +26,7 @@ class Point(object):
 
 
 class Shape(object):
-    coordinate = Point(0, 0)
-    width = 0.0
-    colour = Colour3(0, 0, 0)
-    shape_number = 0
-
-    def __init__(self, coordinate, width, colour, shape_number):
+    def __init__(self, coordinate=Point(0, 0), width=0.0, colour=Colour3(0, 0, 0), shape_number=0):
         self.coordinate = coordinate
         self.width = width
         self.colour = colour
@@ -50,8 +34,6 @@ class Shape(object):
 
 
 class Shapes(object):
-    __Shapes = []
-
     def __init__(self):
         self.__Shapes = []
 
@@ -79,10 +61,6 @@ class Shapes(object):
 
 
 class Painter(PyQt4.QtGui.QWidget):
-    parent_link = 0
-    mouse_coordinate = Point(0, 0)
-    last_coordinate = Point(0, 0)
-
     def __init__(self, parent):
         super(Painter, self).__init__()
         self.parent_link = parent
@@ -159,11 +137,36 @@ class CreateUI(base, form):
     is_mouseing = False
     paint_panel = 0
 
+    def __init__(self):
+        super(base, self).__init__()
+        self.setupUi(self)
+        self.setObjectName('MNISTer')
+        self.paint_panel = Painter(self)
+        self.paint_panel.close()
+        self.BlackBoard.insertWidget(0, self.paint_panel)
+        self.BlackBoard.setCurrentWidget(self.paint_panel)
+        self.establishConnections()
+        self.ClassLabels.addItem('0')
+        self.ClassLabels.addItem('1')
+        self.ClassLabels.addItem('2')
+        self.ClassLabels.addItem('3')
+        self.ClassLabels.addItem('4')
+        self.ClassLabels.addItem('5')
+        self.ClassLabels.addItem('6')
+        self.ClassLabels.addItem('7')
+        self.ClassLabels.addItem('8')
+        self.ClassLabels.addItem('9')
+
     def switchBrush(self):
         self.is_brush = not self.is_brush
 
     def judge(self):
-        pass
+        pixmap = PyQt4.QtGui.QPixmap.grabWidget(self.paint_panel)
+        pixmap.save('temp.jpg')
+        img = cv2.imread('temp.jpg', cv2.IMREAD_GRAYSCALE)
+        img28x28 = cv2.resize(img, (28, 28), interpolation=cv2.INTER_AREA)
+        negaposi = cv2.bitwise_not(img28x28)
+        cv2.imwrite('temp28x28.jpg', negaposi)
 
     def changeThickness(self, num):
         self.current_width = num
@@ -185,26 +188,6 @@ class CreateUI(base, form):
         PyQt4.QtCore.QObject.connect(self.ThicknessSpinner, PyQt4.QtCore.SIGNAL('valueChanged(int)'), self.changeThickness)
         PyQt4.QtCore.QObject.connect(self.CorrectButton, PyQt4.QtCore.SIGNAL('clicked()'), self.correct)
         PyQt4.QtCore.QObject.connect(self.SubmitButton, PyQt4.QtCore.SIGNAL('clicked()'), self.submit)
-
-    def __init__(self):
-        super(base, self).__init__()
-        self.setupUi(self)
-        self.setObjectName('MNISTer')
-        self.paint_panel = Painter(self)
-        self.paint_panel.close()
-        self.BlackBoard.insertWidget(0, self.paint_panel)
-        self.BlackBoard.setCurrentWidget(self.paint_panel)
-        self.establishConnections()
-        self.ClassLabels.addItem('0')
-        self.ClassLabels.addItem('1')
-        self.ClassLabels.addItem('2')
-        self.ClassLabels.addItem('3')
-        self.ClassLabels.addItem('4')
-        self.ClassLabels.addItem('5')
-        self.ClassLabels.addItem('6')
-        self.ClassLabels.addItem('7')
-        self.ClassLabels.addItem('8')
-        self.ClassLabels.addItem('9')
 
 if __name__ == '__main__':
     app = PyQt4.QtGui.QApplication(sys.argv)
