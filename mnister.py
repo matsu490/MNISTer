@@ -161,12 +161,16 @@ class CreateUI(base, form):
         self.is_brush = not self.is_brush
 
     def judge(self):
-        pixmap = PyQt4.QtGui.QPixmap.grabWidget(self.paint_panel)
-        pixmap.save('temp.jpg')
-        img = cv2.imread('temp.jpg', cv2.IMREAD_GRAYSCALE)
+        raw_pixmap = PyQt4.QtGui.QPixmap.grabWidget(self.paint_panel)
+        raw_pixmap.save('temp.png')
+        img = cv2.imread('temp.png', cv2.IMREAD_GRAYSCALE)
         img28x28 = cv2.resize(img, (28, 28), interpolation=cv2.INTER_AREA)
         negaposi = cv2.bitwise_not(img28x28)
-        cv2.imwrite('temp28x28.jpg', negaposi)
+        cv2.imwrite('temp28x28.png', negaposi)
+        scaled_pixmap = PyQt4.QtGui.QPixmap('temp28x28.png')
+        scaled_pixmap = scaled_pixmap.scaledToHeight(200)
+        scaled_pixmap = scaled_pixmap.scaledToWidth(200)
+        self.label.setPixmap(scaled_pixmap)
 
     def changeThickness(self, num):
         self.current_width = num
