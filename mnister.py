@@ -1,4 +1,4 @@
-import sys
+import shutil, sys, datetime
 import PyQt4.QtGui
 import PyQt4.QtCore
 import PyQt4.uic
@@ -8,6 +8,14 @@ import pickle
 
 uifile = './mainUI.ui'
 form, base = PyQt4.uic.loadUiType(uifile)
+uifile = './dialogUI.ui'
+form1, base1 = PyQt4.uic.loadUiType(uifile)
+
+
+class SecretDialog(form1, base1):
+    def __init__(self, parent=None):
+        super(SecretDialog, self).__init__(parent)
+        self.setupUi(self)
 
 
 class Colour3(object):
@@ -127,7 +135,7 @@ class Painter(PyQt4.QtGui.QWidget):
                     T1.coordinate.y)
 
 
-class CreateUI(base, form):
+class MainUI(base, form):
     def __init__(self):
         super(base, self).__init__()
         self.setupUi(self)
@@ -156,7 +164,6 @@ class CreateUI(base, form):
     def unpickle(self, fname):
         with open(fname, 'rb') as f:
             y = pickle.load(f)
-
         return y
 
     def switchBrush(self):
@@ -173,8 +180,13 @@ class CreateUI(base, form):
         scaled_pixmap = scaled_pixmap.scaledToHeight(200)
         self.label.setPixmap(scaled_pixmap)
         scaled_img_array = cv2.imread('temp28x28.png', cv2.IMREAD_GRAYSCALE)
-        digit = self.network.judge(scaled_img_array.reshape(784))
-        self.ClassificationResult.setText(str(digit))
+        self.judged_class = self.network.judge(scaled_img_array.reshape(784))
+        self.ClassificationResult.setText(str(self.judged_class))
+        self.CorrectButton.setEnabled(True)
+        self.SubmitButton.setEnabled(True)
+        self.ClassLabels.setEnabled(True)
+        self.ClassificationResult.setEnabled(True)
+        self.JudgeButton.setEnabled(False)
 
     def changeThickness(self, num):
         self.current_width = num
@@ -183,12 +195,27 @@ class CreateUI(base, form):
         self.drawing_shapes = Shapes()
         self.paint_panel.repaint()
         self.label.clear()
+        self.CorrectButton.setEnabled(False)
+        self.SubmitButton.setEnabled(False)
+        self.ClassLabels.setEnabled(False)
+        self.ClassificationResult.setEnabled(False)
+        self.JudgeButton.setEnabled(True)
 
     def correct(self):
-        pass
+        self.correct_class = self.judged_class
+        present_time = datetime.datetime.now()
+        shutil.copy('temp28x28.png', './images/label{0}/img{1:%Y%m%d%H%M%S}.png'.format(self.correct_class, present_time))
+        self.clearSlate()
 
     def submit(self):
-        pass
+        self.correct_class = self.ClassLabels.currentIndex()
+        present_time = datetime.datetime.now()
+        shutil.copy('temp28x28.png', './images/label{0}/img{1:%Y%m%d%H%M%S}.png'.format(self.correct_class, present_time))
+        self.clearSlate()
+
+    def callSecretDialog(self):
+        self.secret_dialog = SecretDialog()
+        self.secret_dialog.show()
 
     def establishConnections(self):
         PyQt4.QtCore.QObject.connect(self.BrushButton, PyQt4.QtCore.SIGNAL('clicked()'), self.switchBrush)
@@ -197,6 +224,7 @@ class CreateUI(base, form):
         PyQt4.QtCore.QObject.connect(self.ThicknessSpinner, PyQt4.QtCore.SIGNAL('valueChanged(int)'), self.changeThickness)
         PyQt4.QtCore.QObject.connect(self.CorrectButton, PyQt4.QtCore.SIGNAL('clicked()'), self.correct)
         PyQt4.QtCore.QObject.connect(self.SubmitButton, PyQt4.QtCore.SIGNAL('clicked()'), self.submit)
+        PyQt4.QtCore.QObject.connect(self.SecretAction, PyQt4.QtCore.SIGNAL('triggered()'), self.callSecretDialog)
 
 
 def sigmoid(x):
@@ -204,7 +232,8 @@ def sigmoid(x):
 
 
 def softmax(x):
-    return np.exp(x) / np.sum(np.exp(x))
+    c = np.max(x)
+    return np.exp(x - c) / np.sum(np.exp(x - c))
 
 
 def numerical_gradient(f, x):
@@ -289,6 +318,8 @@ class TwoLayerNet(object):
 
 if __name__ == '__main__':
     app = PyQt4.QtGui.QApplication(sys.argv)
-    main_form = CreateUI()
+
+    main_form = MainUI()
     main_form.show()
+
     sys.exit(app.exec_())
