@@ -622,6 +622,10 @@ if __name__ == '__main__':
     app = PyQt4.QtGui.QApplication(sys.argv)
 
     main_form = MainUI()
+    palette = PyQt4.QtGui.QPalette()
+    palette.setColor(PyQt4.QtGui.QPalette.Background, PyQt4.QtCore.Qt.white)
+    main_form.setAutoFillBackground(True)
+    main_form.setPalette(palette)
     main_form.show()
 
     sys.exit(app.exec_())
