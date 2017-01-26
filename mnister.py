@@ -2,7 +2,7 @@ import shutil, sys, datetime
 import PyQt4.QtGui
 import PyQt4.QtCore
 import PyQt4.uic
-import cv2
+import PIL.Image, PIL.ImageOps
 import numpy as np
 import pickle
 from collections import OrderedDict
@@ -19,7 +19,7 @@ class SecretDialog(form1, base1):
         self.setupUi(self)
 
 
-class Colour3(object):
+class Color(object):
     def __init__(self, R=0, G=0, B=0):
         self.R = R
         self.G = G
@@ -37,10 +37,10 @@ class Point(object):
 
 
 class Shape(object):
-    def __init__(self, coordinate=Point(0, 0), width=0.0, colour=Colour3(0, 0, 0), shape_number=0):
+    def __init__(self, coordinate=Point(0, 0), width=0.0, color=Color(0, 0, 0), shape_number=0):
         self.coordinate = coordinate
         self.width = width
-        self.colour = colour
+        self.color = color
         self.shape_number = shape_number
 
 
@@ -51,8 +51,8 @@ class Shapes(object):
     def countShape(self):
         return len(self.__Shapes)
 
-    def updateShape(self, coordinate, width, colour, shape_number):
-        shape = Shape(coordinate, width, colour, shape_number)
+    def updateShape(self, coordinate, width, color, shape_number):
+        shape = Shape(coordinate, width, color, shape_number)
         self.__Shapes.append(shape)
 
     def getShape(self, index):
@@ -106,7 +106,7 @@ class Painter(PyQt4.QtGui.QWidget):
                 self.parent_link.drawing_shapes.updateShape(
                     self.last_coordinate,
                     self.parent_link.current_width,
-                    self.parent_link.current_colour,
+                    self.parent_link.current_color,
                     self.parent_link.shape_num)
                 self.repaint()
         if self.parent_link.is_eraseing:
@@ -129,7 +129,7 @@ class Painter(PyQt4.QtGui.QWidget):
 
             if T.shape_number == T1.shape_number:
                 pen = PyQt4.QtGui.QPen(
-                    PyQt4.QtGui.QColor(T.colour.R, T.colour.G, T.colour.B),
+                    PyQt4.QtGui.QColor(T.color.R, T.color.G, T.color.B),
                     T.width / 2,
                     PyQt4.QtCore.Qt.SolidLine)
                 painter.setPen(pen)
@@ -156,7 +156,7 @@ class MainUI(base, form):
         self.is_eraseing = False
         self.is_mouseing = False
         self.drawing_shapes = Shapes()
-        self.current_colour = Colour3(0,0,0)
+        self.current_color = Color(0,0,0)
         self.shape_num = 0
         self.current_width = 20
         params = self.unpickle('params_trained_simpleconv.pkl')
@@ -178,14 +178,14 @@ class MainUI(base, form):
     def judge(self):
         raw_pixmap = PyQt4.QtGui.QPixmap.grabWidget(self.paint_panel)
         raw_pixmap.save('temp.png')
-        img = cv2.imread('temp.png', cv2.IMREAD_GRAYSCALE)
-        img28x28 = cv2.resize(img, (28, 28), interpolation=cv2.INTER_AREA)
-        negaposi = cv2.bitwise_not(img28x28)
-        cv2.imwrite('temp28x28.png', negaposi)
+        img = PIL.Image.open('./temp.png').convert('L')
+        img = PIL.ImageOps.invert(img)
+        img.thumbnail((28, 28))
+        img.save('temp28x28.png')
         scaled_pixmap = PyQt4.QtGui.QPixmap('temp28x28.png')
         scaled_pixmap = scaled_pixmap.scaledToHeight(226)
         self.label.setPixmap(scaled_pixmap)
-        scaled_img_array = cv2.imread('temp28x28.png', cv2.IMREAD_GRAYSCALE)
+        scaled_img_array = np.asarray(PIL.Image.open('temp28x28.png').convert('L'))
         self.judged_class = self.network.judge(scaled_img_array.reshape(784))
         self.ClassificationResult.setText(str(self.judged_class))
         self.CorrectButton.setEnabled(True)
