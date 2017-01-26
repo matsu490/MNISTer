@@ -77,6 +77,10 @@ class Painter(PyQt4.QtGui.QWidget):
         self.parent_link = parent
         self.mouse_coordinate = Point(0, 0)
         self.last_coordinate = Point(0, 0)
+        palette = PyQt4.QtGui.QPalette()
+        palette.setColor(PyQt4.QtGui.QPalette.Background, PyQt4.QtCore.Qt.white)
+        self.setAutoFillBackground(True)
+        self.setPalette(palette)
 
     def mousePressEvent(self, event):
         if self.parent_link.is_brush:
@@ -622,10 +626,6 @@ if __name__ == '__main__':
     app = PyQt4.QtGui.QApplication(sys.argv)
 
     main_form = MainUI()
-    palette = PyQt4.QtGui.QPalette()
-    palette.setColor(PyQt4.QtGui.QPalette.Background, PyQt4.QtCore.Qt.white)
-    main_form.setAutoFillBackground(True)
-    main_form.setPalette(palette)
     main_form.show()
 
     sys.exit(app.exec_())
