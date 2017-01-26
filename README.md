@@ -29,7 +29,7 @@ mnist 推論、訓練用の画像データ（28 x 28）をマウスによる手�
 ## ToDo
 - 手書き入力と同時に訓練もできるようにする
 - ネットワークと学習用パラメータファイルの選択を可能にする
-- cv2 を使わないで画像関係の処理をできるようにする
+- 起動時に画像保存用フォルダを自動で作成する
 
 ## References
 1. [Painting on a Widget](https://www.codeproject.com/Articles/373463/Painting-on-a-Widget "Qt での手書き文字入力")
