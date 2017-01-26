@@ -48,9 +48,9 @@
     <property name="geometry">
      <rect>
       <x>240</x>
-      <y>20</y>
-      <width>200</width>
-      <height>200</height>
+      <y>10</y>
+      <width>226</width>
+      <height>226</height>
      </rect>
     </property>
     <property name="frameShape">
@@ -68,7 +68,7 @@
    <widget class="QPushButton" name="ClearButton">
     <property name="geometry">
      <rect>
-      <x>470</x>
+      <x>480</x>
       <y>200</y>
       <width>106</width>
       <height>23</height>
@@ -81,7 +81,7 @@
    <widget class="QSpinBox" name="ThicknessSpinner">
     <property name="geometry">
      <rect>
-      <x>470</x>
+      <x>480</x>
       <y>50</y>
       <width>111</width>
       <height>20</height>
@@ -100,7 +100,7 @@
    <widget class="QPushButton" name="JudgeButton">
     <property name="geometry">
      <rect>
-      <x>470</x>
+      <x>480</x>
       <y>110</y>
       <width>106</width>
       <height>51</height>
@@ -113,7 +113,7 @@
    <widget class="QPushButton" name="BrushButton">
     <property name="geometry">
      <rect>
-      <x>470</x>
+      <x>480</x>
       <y>20</y>
       <width>111</width>
       <height>23</height>
@@ -183,10 +183,10 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>20</y>
-      <width>200</width>
-      <height>200</height>
+      <x>10</x>
+      <y>10</y>
+      <width>226</width>
+      <height>226</height>
      </rect>
     </property>
     <property name="frameShape">

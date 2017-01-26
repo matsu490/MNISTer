@@ -179,7 +179,7 @@ class MainUI(base, form):
         negaposi = cv2.bitwise_not(img28x28)
         cv2.imwrite('temp28x28.png', negaposi)
         scaled_pixmap = PyQt4.QtGui.QPixmap('temp28x28.png')
-        scaled_pixmap = scaled_pixmap.scaledToHeight(200)
+        scaled_pixmap = scaled_pixmap.scaledToHeight(226)
         self.label.setPixmap(scaled_pixmap)
         scaled_img_array = cv2.imread('temp28x28.png', cv2.IMREAD_GRAYSCALE)
         self.judged_class = self.network.judge(scaled_img_array.reshape(784))
