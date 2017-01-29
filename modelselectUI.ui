@@ -82,6 +82,11 @@
    </property>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>ModelList</tabstop>
+  <tabstop>ParameterList</tabstop>
+  <tabstop>ButtonBox</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
