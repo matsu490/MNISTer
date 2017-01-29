@@ -12,9 +12,8 @@ form2, base2 = PyQt4.uic.loadUiType('./modelselectUI.ui')
 
 MODEL_PATH = './models/'
 MODEL_LIST = []
-PARAM_LIST = []
-MODEL = ''
-PARAM = ''
+CURRENT_MODEL = 'models.SimpleConvNet.model'
+CURRENT_PARAM = './models/SimpleConvNet/params_trained_simpleconv.pkl'
 
 
 class ModelSelectDialog(form2, base2):
@@ -25,25 +24,33 @@ class ModelSelectDialog(form2, base2):
         self.establishConnections()
 
     def initModelList(self):
+        global MODEL_LIST
         for x in os.listdir(MODEL_PATH):
             if os.path.isdir(MODEL_PATH + x):
-                MODEL_LIST.append(x + '/')
+                MODEL_LIST.append(x)
                 self.ModelList.addItem(x)
 
     def updateParameterList(self):
         self.ParameterList.clear()
         model = self.ModelList.currentText()
         for x in os.listdir(MODEL_PATH + model):
-            print x
             self.ParameterList.addItem(x)
 
     def setModel(self):
-        MODEL = self.ModelList.currentText()
-        PARAM = self.ParameterList.currentText()
+        global CURRENT_MODEL, CURRENT_PARAM
+        print CURRENT_MODEL
+        model = self.ModelList.currentText()
+        param = self.ParameterList.currentText()
+        CURRENT_MODEL = 'models.{0}.model'.format(model)
+        CURRENT_PARAM = '{0}{1}/{2}'.format(MODEL_PATH, model, param)
+        print CURRENT_MODEL
+        print CURRENT_PARAM
+        print 'setModel()'
 
     def establishConnections(self):
-        PyQt4.QtCore.QObject.connect(self.ModelList, PyQt4.QtCore.SIGNAL('currentIndexChanged(int)'), self.updateParameterList)
-        PyQt4.QtCore.QObject.connect(self.ButtonBox, PyQt4.QtCore.SIGNAL('accepted()'), self.setModel)
+        self.ModelList.activated.connect(self.updateParameterList)
+        self.ButtonBox.accepted.connect(self.setModel)
+        self.ButtonBox.accepted.connect(main_form.initNetwork)
 
 
 class SecretDialog(form1, base1):
@@ -192,9 +199,14 @@ class MainUI(base, form):
         self.current_color = Color(0, 0, 0)
         self.shape_num = 0
         self.current_width = 20
-        # params = self.unpickle('params_trained_simpleconv.pkl')
-        # self.network = TwoLayerNet(params)
-        # self.network = SimpleConvNet(params=params)
+
+    def initNetwork(self):
+        print 'initNetwork()'
+        params = self.unpickle(CURRENT_PARAM)
+        tmp = 'from {0} import Network'.format(CURRENT_MODEL)
+        print tmp
+        exec(tmp)
+        self.network = Network(params=params)
 
     def initClassLabels(self):
         for i in xrange(10):

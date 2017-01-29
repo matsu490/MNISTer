@@ -1,7 +1,7 @@
-from ../../module import *
+from ..module import *
 
 
-class TwoLayerNet(object):
+class Network(object):
     def __init__(self, params, input_size=784, hidden_size=100, output_size=10):
         self.params = {}
         self.params['W1'] = params['W1']

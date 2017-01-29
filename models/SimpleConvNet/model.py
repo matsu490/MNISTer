@@ -1,7 +1,7 @@
-from ../../module import *
+from ..module import *
 
 
-class SimpleConvNet(object):
+class Network(object):
     def __init__(self, params, input_dim=(1, 28, 28),
             conv_param={'filter_num': 30, 'filter_size': 5, 'pad': 0, 'stride': 1},
             hidden_size=100,
