@@ -240,6 +240,7 @@
     <property name="title">
      <string>ファイル</string>
     </property>
+    <addaction name="ModelSelectAction"/>
     <addaction name="QuitAction"/>
    </widget>
    <widget class="QMenu" name="menu_2">
@@ -275,6 +276,11 @@
    </property>
    <property name="shortcut">
     <string>!</string>
+   </property>
+  </action>
+  <action name="ModelSelectAction">
+   <property name="text">
+    <string>モデル選択</string>
    </property>
   </action>
  </widget>
