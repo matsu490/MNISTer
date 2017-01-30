@@ -32,8 +32,8 @@ MNISTer
 
 # ToDo
 - 手書き入力と同時に訓練もできるようにする
-- ネットワークと学習用パラメータファイルの選択を可能にする
 - 起動時に画像保存用フォルダを自動で作成する
+- 現在の正答率を表示する
 
 # References
 1. [Painting on a Widget](https://www.codeproject.com/Articles/373463/Painting-on-a-Widget "Qt での手書き文字入力")
