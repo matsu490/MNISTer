@@ -12,8 +12,6 @@ form2, base2 = PyQt4.uic.loadUiType('./modelselectUI.ui')
 
 MODEL_PATH = './models/'
 MODEL_LIST = []
-CURRENT_MODEL = 'models.SimpleConvNet.model'
-CURRENT_PARAM = './models/SimpleConvNet/params_trained_simpleconv.pkl'
 
 
 class ModelSelectDialog(form2, base2):
@@ -37,15 +35,10 @@ class ModelSelectDialog(form2, base2):
             self.ParameterList.addItem(x)
 
     def setModel(self):
-        global CURRENT_MODEL, CURRENT_PARAM
-        print CURRENT_MODEL
         model = self.ModelList.currentText()
         param = self.ParameterList.currentText()
-        CURRENT_MODEL = 'models.{0}.model'.format(model)
-        CURRENT_PARAM = '{0}{1}/{2}'.format(MODEL_PATH, model, param)
-        print CURRENT_MODEL
-        print CURRENT_PARAM
-        print 'setModel()'
+        main_form.current_model = 'models.{0}.model'.format(model)
+        main_form.current_param = '{0}{1}/{2}'.format(MODEL_PATH, model, param)
 
     def establishConnections(self):
         self.ModelList.activated.connect(self.updateParameterList)
@@ -199,14 +192,17 @@ class MainUI(base, form):
         self.current_color = Color(0, 0, 0)
         self.shape_num = 0
         self.current_width = 20
+        self.current_model = 'models.SimpleConvNet.model'
+        self.current_param = './models/SimpleConvNet/params_trained_simpleconv.pkl'
+        self.initNetwork()
 
     def initNetwork(self):
-        print 'initNetwork()'
-        params = self.unpickle(CURRENT_PARAM)
-        tmp = 'from {0} import Network'.format(CURRENT_MODEL)
-        print tmp
+        params = self.unpickle(self.current_param)
+        tmp = 'from {0} import Network'.format(self.current_model)
         exec(tmp)
         self.network = Network(params=params)
+        self.ModelLabel.setText(self.current_model)
+        self.ParameterLabel.setText(self.current_param)
 
     def initClassLabels(self):
         for i in xrange(10):
