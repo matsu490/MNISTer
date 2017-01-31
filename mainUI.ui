@@ -334,6 +334,9 @@
    <property name="text">
     <string>モデル選択</string>
    </property>
+   <property name="shortcut">
+    <string>M</string>
+   </property>
   </action>
  </widget>
  <tabstops>
