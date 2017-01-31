@@ -29,10 +29,12 @@ class ModelSelectDialog(form2, base2):
                 self.ModelList.addItem(x)
 
     def updateParameterList(self):
+        extensions = ('.pkl', '.pcl', '.pckl', '.pickle')
         self.ParameterList.clear()
         model = self.ModelList.currentText()
         for x in os.listdir(MODEL_PATH + model):
-            self.ParameterList.addItem(x)
+            if os.path.splitext(x)[1] in extensions:
+                self.ParameterList.addItem(x)
 
     def setModel(self):
         model = self.ModelList.currentText()
