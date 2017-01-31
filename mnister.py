@@ -199,6 +199,13 @@ class MainUI(base, form):
         self.current_color = Color(0, 0, 0)
         self.shape_num = 0
         self.current_width = 20
+        self.initImageDir()
+
+    def initImageDir(self):
+        if not os.path.exists('./images'):
+            os.mkdir('./images')
+        if not os.listdir('./images'):
+            [os.mkdir('./images/label{}'.format(d)) for d in xrange(10)]
 
     def initNetwork(self):
         print 'initNetwork()'
