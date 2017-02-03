@@ -35,8 +35,8 @@ MNISTer
 - 下のコンボボックスからパラメータファイルを選択する
 
 # Install
-任意のディレクトリに clone してください。  
-`git clone git@github.com:matsu490/MNISTer.git`
+以下のコマンドで任意のディレクトリに clone してください。  
+`$ git clone git@github.com:matsu490/MNISTer.git`  
 または任意のディレクトリに ZIP ファイルをダウンロードして解凍してください。
 
 # ToDo
