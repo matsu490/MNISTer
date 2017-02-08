@@ -1,3 +1,4 @@
+# coding: utf-8
 import os, shutil, sys, datetime
 import PyQt4.QtGui
 import PyQt4.QtCore
