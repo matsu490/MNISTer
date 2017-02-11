@@ -47,6 +47,21 @@ def cross_entropy_error(y, t):
     return -np.sum(np.log(y[np.arange(batch_size), t])) / batch_size
 
 
+class Sigmoid(object):
+    def __init__(self):
+        self.out = None
+
+    def forward(self, x):
+        out = sigmoid(x)
+        self.out = out
+        return out
+
+    def backward(self, dout):
+        dx = dout * (1.0 - self.out) * self.out
+
+        return dx
+
+
 class Relu(object):
     def __init__(self):
         self.mask = None

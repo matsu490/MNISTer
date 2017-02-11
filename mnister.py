@@ -42,11 +42,11 @@ class ModelSelectDialog(form2, base2):
         param = self.ParameterList.currentText()
         main_form.current_model = 'models.{0}.model'.format(model)
         main_form.current_param = '{0}{1}/{2}'.format(MODEL_PATH, model, param)
+        main_form.initNetwork()
 
     def establishConnections(self):
         self.ModelList.activated.connect(self.updateParameterList)
         self.ButtonBox.accepted.connect(self.setModel)
-        self.ButtonBox.accepted.connect(main_form.initNetwork)
 
 
 class SecretDialog(form1, base1):
@@ -210,7 +210,8 @@ class MainUI(base, form):
         params = self.unpickle(self.current_param)
         tmp = 'from {0} import Network'.format(self.current_model)
         exec(tmp)
-        self.network = Network(params=params)
+        self.network = Network()
+        self.network.load_params(self.current_param)
         self.ModelLabel.setText(self.current_model)
         self.ParameterLabel.setText(self.current_param)
 
