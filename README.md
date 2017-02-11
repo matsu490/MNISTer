@@ -39,12 +39,6 @@ MNISTer
 `$ git clone git@github.com:matsu490/MNISTer.git`  
 または任意のディレクトリに ZIP ファイルをダウンロードして解凍してください。
 
-# ToDo
-- [ ] 手書き入力と同時に訓練もできるようにする
-- [x] ネットワークと学習用パラメータファイルの選択を可能にする
-- [ ] 現在の正答率を表示する
-- [x] 起動時に画像保存用フォルダを自動で作成する
-
 # References
 1. [Painting on a Widget](https://www.codeproject.com/Articles/373463/Painting-on-a-Widget "Qt での手書き文字入力")
 2. [『ゼロから作る Deep Learning』のリポジトリ](https://github.com/oreilly-japan/deep-learning-from-scratch)
